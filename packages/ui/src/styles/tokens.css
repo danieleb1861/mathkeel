@@ -1,0 +1,73 @@
+/*
+ * Day chart: warm paper and deep ink. Night chart: dark water and paper-coloured
+ * ink. Magenta is the chart overprint colour for caution. Class colours always
+ * travel with a distinct shape, so none of them carries meaning alone.
+ */
+
+:root,
+:root[data-theme="day"] {
+  color-scheme: light;
+  --paper: #f6f1e5;
+  --paper-2: #efe8d9;
+  --paper-3: #e6dcc8;
+  --ink: #12233d;
+  --ink-2: #36445a;
+  --ink-3: #566071;
+  --rule: #c3bba8;
+  --rule-soft: #dcd3c0;
+  --line: #5b6677;
+  --alert: #a0105c;
+  --review: #0d5c76;
+  --queue: #875300;
+  --fresh: #12233d;
+  --sea-name: #2d5f78;
+  --wake: #1f7a8c;
+  --wake-band: #1f7a8c;
+  --stipple: #12233d;
+  --stipple-alpha: 0.34;
+  --add-ink: #0b5a48;
+  --add-paper: #dcebd9;
+  --del-ink: #8f1450;
+  --del-paper: #f3dfe0;
+  --focus: #0b4fa8;
+}
+
+:root[data-theme="night"] {
+  color-scheme: dark;
+  --paper: #0b1320;
+  --paper-2: #111c2d;
+  --paper-3: #1a283c;
+  --ink: #ece6d6;
+  --ink-2: #c5c5bb;
+  --ink-3: #a0a8ae;
+  --rule: #33445a;
+  --rule-soft: #223045;
+  --line: #8e9bab;
+  --alert: #f58fc0;
+  --review: #7ccde4;
+  --queue: #e9bb66;
+  --fresh: #ece6d6;
+  --sea-name: #8db8cc;
+  --wake: #5cc0d4;
+  --wake-band: #5cc0d4;
+  --stipple: #c9d4dd;
+  --stipple-alpha: 0.3;
+  --add-ink: #93dcc0;
+  --add-paper: #143229;
+  --del-ink: #f7a9cd;
+  --del-paper: #3a1a2c;
+  --focus: #8cc4ff;
+}
+
+:root {
+  --serif: "Source Serif", "KaTeX_Main", "Iowan Old Style", Georgia, serif;
+  --mono: "Source Code", "KaTeX_Main", ui-monospace, Consolas, monospace;
+  --hair: 1px;
+  --gutter: 20px;
+}
+
+@media (max-width: 759px) {
+  :root {
+    --gutter: 16px;
+  }
+}

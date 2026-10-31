@@ -1,0 +1,47 @@
+schema: 1
+chains[1]{id,title}:
+  interval,Interval for an autocorrelated mean
+contracts[2]:
+  - id: newey_west
+    kind: numeric
+    command[2]: python,.mathkeel/contracts/newey_west.py
+    timeout_s: 30
+  - id: interval
+    kind: numeric
+    command[2]: python,.mathkeel/contracts/interval.py
+    timeout_s: 30
+nodes[3]:
+  - id: stationarity
+    chain: interval
+    kind: assumption
+    title: Weak stationarity
+    status: stated
+    doc:
+      path: README.md
+      quote: The series is weakly stationary
+  - id: newey_west
+    chain: interval
+    kind: equation
+    title: Newey-West variance
+    latex: "\\hat\\sigma^2 = \\hat\\gamma_0 + 2\\sum_{k=1}^{q}\\left(1-\\frac{k}{q+1}\\right)\\hat\\gamma_k"
+    status: numerically_checked
+    doc:
+      path: README.md
+      quote: divided by the full sample size
+    code[1]{path,symbol}:
+      stats.py,newey_west_variance
+    depends_on[1]: stationarity
+    contracts[1]: newey_west
+  - id: interval
+    chain: interval
+    kind: equation
+    title: Interval half-width
+    latex: "\\bar x \\pm 1.96\\,\\sqrt{\\hat\\sigma^2 / n}"
+    status: numerically_checked
+    doc:
+      path: README.md
+      quote: half-width is 1.96 times
+    code[1]{path,symbol}:
+      stats.py,mean_interval
+    depends_on[1]: newey_west
+    contracts[1]: interval

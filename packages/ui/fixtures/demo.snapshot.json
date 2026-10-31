@@ -1,0 +1,2011 @@
+{
+  "schema": 1,
+  "generatedAt": "2026-10-31T15:42:00.000Z",
+  "repo": {
+    "name": "ebbline",
+    "head": "9f2c1ab",
+    "dirty": true,
+    "baseline": "3d8e0a1"
+  },
+  "contractsRun": true,
+  "summary": {
+    "fresh": 24,
+    "queue": 4,
+    "alert": 2,
+    "review": 2,
+    "gaps": 4,
+    "unchartedShare": 0.18
+  },
+  "chains": [
+    {
+      "id": "significance",
+      "title": "Forecast significance",
+      "nodeIds": [
+        "dm.stationary",
+        "dm.lag_rule",
+        "dm.loss",
+        "dm.bartlett",
+        "dm.two_sided",
+        "dm.variance",
+        "dm.statistic",
+        "dm.hln",
+        "dm.limit",
+        "dm.code.newey_west",
+        "dm.code.statistic",
+        "dm.code.hln",
+        "dm.test.reference",
+        "dm.test.symmetry"
+      ]
+    },
+    {
+      "id": "forecast",
+      "title": "Autoregressive forecast",
+      "nodeIds": [
+        "ar.causal",
+        "ar.order_cap",
+        "ar.yule_walker",
+        "ar.innovation",
+        "ar.predictor",
+        "ar.code.fit",
+        "ar.code.innovation",
+        "ar.test.roundtrip",
+        "ar.test.positive"
+      ]
+    },
+    {
+      "id": "spectrum",
+      "title": "Spectral estimate",
+      "nodeIds": [
+        "sp.sign",
+        "sp.windows",
+        "sp.periodogram",
+        "sp.density",
+        "sp.taper",
+        "sp.code.density",
+        "sp.code.periodogram",
+        "sp.test.parseval",
+        "sp.test.two_tone"
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "id": "dm.stationary",
+      "chain": "significance",
+      "kind": "assumption",
+      "title": "Loss differential is covariance stationary",
+      "latex": "\\mathbb{E}[d_t] = \\mu,\\quad \\operatorname{Cov}(d_t, d_{t-k}) = \\gamma_k",
+      "status": "stated",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "We assume the loss differential is covariance stationary with finite long-run variance.",
+        "hash": "sha256:165801347d25d8ebf06892245972f2c8"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 18,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "dm.lag_rule",
+      "chain": "significance",
+      "kind": "parameter",
+      "title": "Truncation lag rule",
+      "latex": "q = \\lfloor T^{1/3} \\rfloor",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "The truncation lag is the integer part of the cube root of the sample size.",
+        "hash": "sha256:c2735972d2ec6ba952f768ab0fe7ad6f"
+      },
+      "code": [
+        {
+          "path": "ebbline/kernels.py",
+          "symbol": "default_lag",
+          "quote": "return int(n ** (1 / 3))",
+          "hash": "sha256:2e5a33f78b1b925479bcfad300e5d762"
+        }
+      ],
+      "units": "samples",
+      "depends_on": [],
+      "contracts": [
+        "lag_rule_literal"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 41,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/kernels.py",
+          "symbol": "default_lag",
+          "state": "fresh",
+          "line": 27,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "lag_rule_literal",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "dm.loss",
+      "chain": "significance",
+      "kind": "definition",
+      "title": "Loss differential",
+      "latex": "d_t = L(e_{1,t}) - L(e_{2,t})",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "The loss differential at time t is the loss of the first forecast minus the loss of the second.",
+        "hash": "sha256:2e4ef276abc36558eb334ae658aa389e"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "loss_differential",
+          "quote": "return loss(e1) - loss(e2)",
+          "hash": "sha256:3567c2334e2ea484e3e7722b6694b382"
+        }
+      ],
+      "units": null,
+      "depends_on": [],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 12,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "loss_differential",
+          "state": "fresh",
+          "line": 34,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "dm.bartlett",
+      "chain": "significance",
+      "kind": "definition",
+      "title": "Bartlett kernel weights",
+      "latex": "w_j = 1 - \\frac{j}{q+1}",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "Weights decline linearly and reach zero at lag q + 1.",
+        "hash": "sha256:708da9dacaf43e9409736b35aed587bd"
+      },
+      "code": [
+        {
+          "path": "ebbline/kernels.py",
+          "symbol": "bartlett",
+          "quote": "return 1 - j / (q + 1)",
+          "hash": "sha256:fe657b7800ac51991f6a8b78db2d171e"
+        }
+      ],
+      "units": null,
+      "depends_on": [],
+      "contracts": [
+        "bartlett_shape"
+      ],
+      "verified_by": [
+        "tests/test_kernels.py::test_bartlett_endpoints"
+      ],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 44,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/kernels.py",
+          "symbol": "bartlett",
+          "state": "fresh",
+          "line": 41,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "bartlett_shape",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "dm.two_sided",
+      "chain": "significance",
+      "kind": "convention",
+      "title": "Two-sided alternative",
+      "status": "stated",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "Unless stated otherwise, p-values are two-sided.",
+        "hash": "sha256:0c071d004e35c2654b44272706a5f5fc"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "p_value",
+          "quote": "return 2 * norm_sf(abs(z))",
+          "hash": "sha256:81ca13dd338fa8964f5323f382d960ca"
+        }
+      ],
+      "units": null,
+      "depends_on": [],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 63,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "p_value",
+          "state": "fresh",
+          "line": 71,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "dm.variance",
+      "chain": "significance",
+      "kind": "equation",
+      "title": "Newey-West long-run variance",
+      "latex": "\\hat\\sigma^2_{\\bar d} = \\frac{1}{T}\\Bigl(\\hat\\gamma_0 + 2\\sum_{j=1}^{q} w_j\\,\\hat\\gamma_j\\Bigr), \\qquad w_j = 1 - \\frac{j}{q+1}",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "The long-run variance adds autocovariances up to lag q, each weighted by 1 - j/(q + 1).",
+        "hash": "sha256:9335595cf9c4e33963f3c4628885e096"
+      },
+      "code": [
+        {
+          "path": "ebbline/longrun.py",
+          "symbol": "long_run_variance",
+          "quote": "w = 1 - j / (q + 1)",
+          "hash": "sha256:fbb2847986b5a7316798e4ab67ab97a6"
+        }
+      ],
+      "units": "loss² per sample²",
+      "depends_on": [
+        "dm.loss",
+        "dm.bartlett",
+        "dm.lag_rule",
+        "dm.stationary"
+      ],
+      "contracts": [
+        "nw_matches_spec",
+        "nw_units"
+      ],
+      "verified_by": [
+        "tests/test_longrun.py::test_reference_series"
+      ],
+      "pinned_to_code": false,
+      "class": "alert",
+      "reasons": [
+        "Contract nw_matches_spec failed",
+        "Code anchor long_run_variance changed in ebbline/longrun.py",
+        "No node sharing nw_matches_spec has a changed document anchor"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 52,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/longrun.py",
+          "symbol": "long_run_variance",
+          "state": "queue",
+          "line": 88,
+          "before": "w = 1 - j / (q + 1)",
+          "after": "w = 1 - j / q"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "nw_matches_spec",
+          "state": "fail",
+          "msg": "long_run_variance differs from the documented formula on the reference series: 0.04127 against 0.03971, tolerance 1e-6"
+        },
+        {
+          "id": "nw_units",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": {
+        "verdict": "error",
+        "confidence": 0.74,
+        "reason": "The document still states weights of 1 - j/(q + 1). The diff drops the + 1, so the weight at lag q becomes zero and the variance estimate moves on the reference series. Nothing in the commit message or the documentation mentions a change of kernel."
+      }
+    },
+    {
+      "id": "dm.statistic",
+      "chain": "significance",
+      "kind": "equation",
+      "title": "Diebold-Mariano statistic",
+      "latex": "\\mathrm{DM} = \\frac{\\bar d}{\\sqrt{\\hat\\sigma^2_{\\bar d}}}",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "The statistic divides the mean loss differential by the square root of its long-run variance.",
+        "hash": "sha256:b074df4b1279c1b2bf0a2316cf939a2c"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "dm_statistic",
+          "quote": "return d.mean() / sqrt(lrv)",
+          "hash": "sha256:0db9f16a60ff920c0c1b51fc473a2790"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "dm.variance",
+        "dm.loss"
+      ],
+      "contracts": [
+        "dm_reference"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 58,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "dm_statistic",
+          "state": "fresh",
+          "line": 52,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "dm_reference",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.hln",
+      "chain": "significance",
+      "kind": "lemma",
+      "title": "Small-sample correction factor",
+      "latex": "\\mathrm{DM}^{*} = \\sqrt{\\frac{T + 1 - 2h + h(h-1)/T}{T}}\\;\\mathrm{DM}",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "A multiplicative correction is applied before comparing against the t distribution.",
+        "hash": "sha256:eb9a94479ea0823f2763663db7721066"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "hln_factor",
+          "quote": "return sqrt((n + 1 - 2 * h + h * (h - 1) / n) / n)",
+          "hash": "sha256:753727ad2ee55c977f334261b11e864d"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "dm.statistic"
+      ],
+      "contracts": [
+        "hln_factor_table"
+      ],
+      "verified_by": [],
+      "pinned_to_code": true,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 74,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "hln_factor",
+          "state": "fresh",
+          "line": 63,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "hln_factor_table",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.limit",
+      "chain": "significance",
+      "kind": "theorem",
+      "title": "Asymptotic normality under equal accuracy",
+      "latex": "\\mathrm{DM} \\xrightarrow{\\;d\\;} \\mathcal{N}(0, 1) \\quad \\text{as } T \\to \\infty",
+      "status": "argued",
+      "proof": {
+        "state": "sketch",
+        "ref": "docs/significance.md#sketch"
+      },
+      "doc": {
+        "path": "docs/significance.md",
+        "symbol": null,
+        "quote": "Under equal predictive accuracy the statistic is asymptotically standard normal.",
+        "hash": "sha256:ff085f7ca5c895cd6f42b2dcb028639a"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "dm.statistic",
+        "dm.stationary"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/significance.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 66,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.code.newey_west",
+      "chain": "significance",
+      "kind": "code",
+      "title": "long_run_variance",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "ebbline/longrun.py",
+        "symbol": "long_run_variance",
+        "quote": "Newey-West long-run variance of the sample mean.",
+        "hash": "sha256:0253faff23b57d990c8e0aa4e5af1f85"
+      },
+      "code": [
+        {
+          "path": "ebbline/longrun.py",
+          "symbol": "long_run_variance",
+          "quote": "w = 1 - j / (q + 1)",
+          "hash": "sha256:fbb2847986b5a7316798e4ab67ab97a6"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "dm.variance"
+      ],
+      "contracts": [
+        "nw_matches_spec"
+      ],
+      "verified_by": [
+        "tests/test_longrun.py::test_reference_series"
+      ],
+      "pinned_to_code": false,
+      "class": "alert",
+      "reasons": [
+        "Contract nw_matches_spec failed",
+        "Code anchor changed in ebbline/longrun.py"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "ebbline/longrun.py",
+          "symbol": "long_run_variance",
+          "state": "fresh",
+          "line": 72,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/longrun.py",
+          "symbol": "long_run_variance",
+          "state": "queue",
+          "line": 88,
+          "before": "w = 1 - j / (q + 1)",
+          "after": "w = 1 - j / q"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "nw_matches_spec",
+          "state": "fail",
+          "msg": "long_run_variance differs from the documented formula on the reference series: 0.04127 against 0.03971, tolerance 1e-6"
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": {
+        "verdict": "error",
+        "confidence": 0.74,
+        "reason": "Same diff as dm.variance. The implementation no longer follows the weights stated in the documentation."
+      }
+    },
+    {
+      "id": "dm.code.statistic",
+      "chain": "significance",
+      "kind": "code",
+      "title": "dm_statistic",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "ebbline/dm.py",
+        "symbol": "dm_statistic",
+        "quote": "Diebold-Mariano statistic for two forecast error series.",
+        "hash": "sha256:7f00016d150be90799a27e522451e275"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "dm_statistic",
+          "quote": "return d.mean() / sqrt(lrv)",
+          "hash": "sha256:0db9f16a60ff920c0c1b51fc473a2790"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "dm.statistic",
+        "dm.code.newey_west"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "ebbline/dm.py",
+          "symbol": "dm_statistic",
+          "state": "fresh",
+          "line": 45,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "dm_statistic",
+          "state": "fresh",
+          "line": 52,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "dm.code.newey_west",
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.code.hln",
+      "chain": "significance",
+      "kind": "code",
+      "title": "hln_factor",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "ebbline/dm.py",
+        "symbol": "hln_factor",
+        "quote": "Small-sample scale factor.",
+        "hash": "sha256:367be16a68dc71fd623b6ec301140b8f"
+      },
+      "code": [
+        {
+          "path": "ebbline/dm.py",
+          "symbol": "hln_factor",
+          "quote": "return sqrt((n + 1 - 2 * h + h * (h - 1) / n) / n)",
+          "hash": "sha256:753727ad2ee55c977f334261b11e864d"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "dm.hln"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": true,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "ebbline/dm.py",
+          "symbol": "hln_factor",
+          "state": "fresh",
+          "line": 60,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/dm.py",
+          "symbol": "hln_factor",
+          "state": "fresh",
+          "line": 63,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.test.reference",
+      "chain": "significance",
+      "kind": "test",
+      "title": "Reference series value",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "tests/test_longrun.py",
+        "symbol": "test_reference_series",
+        "quote": "Hand-computed variance of the twelve-point reference series.",
+        "hash": "sha256:06790fba1fced80b633e92f9bb151b29"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "dm.code.newey_west"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "tests/test_longrun.py",
+          "symbol": "test_reference_series",
+          "state": "fresh",
+          "line": 14,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "dm.code.newey_west",
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "dm.test.symmetry",
+      "chain": "significance",
+      "kind": "test",
+      "title": "Sign flips when models swap",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "tests/test_dm.py",
+        "symbol": "test_swap_symmetry",
+        "quote": "Swapping the two forecasts negates the statistic.",
+        "hash": "sha256:746a731da3f80596645d5323c392dcbb"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "dm.code.statistic"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "tests/test_dm.py",
+          "symbol": "test_swap_symmetry",
+          "state": "fresh",
+          "line": 31,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "dm.code.statistic",
+        "dm.variance"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "ar.causal",
+      "chain": "forecast",
+      "kind": "assumption",
+      "title": "Autoregression is causal",
+      "latex": "\\phi(z) \\neq 0 \\;\\text{ for } |z| \\le 1",
+      "status": "stated",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/forecast.md",
+        "symbol": null,
+        "quote": "All roots of the autoregressive polynomial lie outside the unit circle.",
+        "hash": "sha256:4e66908e9ef76de8a4788956cd35b83a"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/forecast.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 9,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.order_cap",
+      "chain": "forecast",
+      "kind": "parameter",
+      "title": "Order cap",
+      "latex": "p_{\\max} = 12",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/forecast.md",
+        "symbol": null,
+        "quote": "The order search stops at twelve lags.",
+        "hash": "sha256:9dedbe6e6db7d6941bb48d5d1fdca022"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "MAX_ORDER",
+          "quote": "const MAX_ORDER: usize = 12;",
+          "hash": "sha256:5ffe89c5a561ecb11d16d9c645ccc21f"
+        }
+      ],
+      "units": "lags",
+      "depends_on": [],
+      "contracts": [
+        "order_cap_literal"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/forecast.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 15,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "MAX_ORDER",
+          "state": "fresh",
+          "line": 8,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "order_cap_literal",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.yule_walker",
+      "chain": "forecast",
+      "kind": "equation",
+      "title": "Yule-Walker system",
+      "latex": "\\Gamma_p\\,\\hat\\phi = \\hat\\gamma_p",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/forecast.md",
+        "symbol": null,
+        "quote": "Coefficients solve the symmetric Toeplitz system built from sample autocovariances.",
+        "hash": "sha256:91469cdf8d1d0f999e9e10a27747813c"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "solve_toeplitz",
+          "quote": "levinson(&gamma[..=p])",
+          "hash": "sha256:843af5308bfd5ad4f43b1dcf24f7a558"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "ar.causal",
+        "ar.order_cap"
+      ],
+      "contracts": [
+        "yw_roundtrip"
+      ],
+      "verified_by": [
+        "crates/ebb_core/tests/yule.rs::roundtrip_ar2"
+      ],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/forecast.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 21,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "solve_toeplitz",
+          "state": "fresh",
+          "line": 42,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "yw_roundtrip",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.innovation",
+      "chain": "forecast",
+      "kind": "equation",
+      "title": "Innovation variance",
+      "latex": "\\hat\\sigma_\\varepsilon^2 = \\hat\\gamma_0 - \\hat\\phi^{\\top}\\hat\\gamma_p",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/forecast.md",
+        "symbol": null,
+        "quote": "Innovation variance is the sample variance minus the fitted part.",
+        "hash": "sha256:d86be972e6b0cd52f32c5a6f3f152f50"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "innovation_var",
+          "quote": "gamma[0] - dot(&phi, &gamma[1..])",
+          "hash": "sha256:83b7e5d5f22ae9ad6d22f58892b56206"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "ar.yule_walker"
+      ],
+      "contracts": [
+        "innovation_positive"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "review",
+      "reasons": [
+        "Contract innovation_positive failed",
+        "Code anchor innovation_var changed",
+        "Judge proposal: legitimate"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/forecast.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 29,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "innovation_var",
+          "state": "queue",
+          "line": 67,
+          "before": "gamma[0] - dot(&phi, &gamma[1..])",
+          "after": "(gamma[0] - dot(&phi, &gamma[1..])).max(0.0)"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "innovation_positive",
+          "state": "fail",
+          "msg": "Near-unit-root series now returns 0.0 where the frozen value was -1.2e-16"
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": {
+        "verdict": "legitimate",
+        "confidence": 0.91,
+        "reason": "The clamp only removes a negative rounding residual near a unit root. The documented formula is unchanged for every series the document covers, and the contract fails because its frozen value held that residual."
+      }
+    },
+    {
+      "id": "ar.predictor",
+      "chain": "forecast",
+      "kind": "lemma",
+      "title": "One-step predictor",
+      "latex": "\\hat y_{t+1\\mid t} = \\sum_{i=1}^{p} \\hat\\phi_i\\, y_{t+1-i}",
+      "status": "formally_checked",
+      "proof": {
+        "state": "checked",
+        "ref": "proofs/one_step.lean"
+      },
+      "doc": {
+        "path": "docs/forecast.md",
+        "symbol": null,
+        "quote": "The one-step predictor is the conditional mean of the fitted autoregression.",
+        "hash": "sha256:eb1f0ca6e9ef17ec5e68534b3289ed0b"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "predict_one",
+          "quote": "dot(&phi, history)",
+          "hash": "sha256:68f1267208eb8ed402ef280751521428"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "ar.yule_walker"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/forecast.md",
+          "symbol": null,
+          "state": "fresh",
+          "line": 36,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "predict_one",
+          "state": "fresh",
+          "line": 88,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.code.fit",
+      "chain": "forecast",
+      "kind": "code",
+      "title": "fit_ar",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "crates/ebb_core/src/yule.rs",
+        "symbol": "fit_ar",
+        "quote": "Fit an autoregression by Levinson recursion.",
+        "hash": "sha256:350710887c0c94a97158e4ddeca4cbab"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "fit_ar",
+          "quote": "let phi = solve_toeplitz(&gamma, p);",
+          "hash": "sha256:1b2e96d96eb3fa8a710be15bbc8bd15f"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "ar.yule_walker"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "fit_ar",
+          "state": "fresh",
+          "line": 31,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "fit_ar",
+          "state": "fresh",
+          "line": 36,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.code.innovation",
+      "chain": "forecast",
+      "kind": "code",
+      "title": "innovation_var",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "crates/ebb_core/src/yule.rs",
+        "symbol": "innovation_var",
+        "quote": "Variance of the one-step innovations.",
+        "hash": "sha256:f1541d948e3fc05e6adb53a08882f9b1"
+      },
+      "code": [
+        {
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "innovation_var",
+          "quote": "gamma[0] - dot(&phi, &gamma[1..])",
+          "hash": "sha256:83b7e5d5f22ae9ad6d22f58892b56206"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "ar.innovation"
+      ],
+      "contracts": [
+        "innovation_positive"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "review",
+      "reasons": [
+        "Contract innovation_positive failed",
+        "Judge proposal: legitimate"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "innovation_var",
+          "state": "fresh",
+          "line": 64,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "crates/ebb_core/src/yule.rs",
+          "symbol": "innovation_var",
+          "state": "queue",
+          "line": 67,
+          "before": "gamma[0] - dot(&phi, &gamma[1..])",
+          "after": "(gamma[0] - dot(&phi, &gamma[1..])).max(0.0)"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "innovation_positive",
+          "state": "fail",
+          "msg": "Near-unit-root series now returns 0.0 where the frozen value was -1.2e-16"
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": {
+        "verdict": "legitimate",
+        "confidence": 0.91,
+        "reason": "Same change as ar.innovation."
+      }
+    },
+    {
+      "id": "ar.test.roundtrip",
+      "chain": "forecast",
+      "kind": "test",
+      "title": "AR(2) round trip",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "crates/ebb_core/tests/yule.rs",
+        "symbol": "roundtrip_ar2",
+        "quote": "Coefficients of a simulated AR(2) are recovered within tolerance.",
+        "hash": "sha256:0162748a4a4d8b22ed0bb5f72e8b3405"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "ar.code.fit"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "crates/ebb_core/tests/yule.rs",
+          "symbol": "roundtrip_ar2",
+          "state": "fresh",
+          "line": 11,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "ar.test.positive",
+      "chain": "forecast",
+      "kind": "test",
+      "title": "Variance stays non-negative",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "crates/ebb_core/tests/yule.rs",
+        "symbol": "nonnegative_variance",
+        "quote": "Innovation variance is non-negative on the near-unit-root series.",
+        "hash": "sha256:d378be4deddb6463f3e62252bc0a4277"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "ar.code.innovation"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "crates/ebb_core/tests/yule.rs",
+          "symbol": "nonnegative_variance",
+          "state": "fresh",
+          "line": 38,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "ar.code.innovation",
+        "ar.innovation"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "sp.sign",
+      "chain": "spectrum",
+      "kind": "convention",
+      "title": "Fourier sign convention",
+      "latex": "\\hat x(\\omega) = \\sum_t x_t\\, e^{-i\\omega t}",
+      "status": "stated",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/spectrum.tex",
+        "symbol": null,
+        "quote": "The forward transform uses a negative exponent.",
+        "hash": "sha256:20edde727c357faa14bfc9f364c51355"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/spectrum.tex",
+          "symbol": null,
+          "state": "fresh",
+          "line": 22,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.windows",
+      "chain": "spectrum",
+      "kind": "closed_list",
+      "title": "Supported lag windows",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/spectrum.tex",
+        "symbol": null,
+        "quote": "Three lag windows are supported: Bartlett, Parzen and Tukey.",
+        "hash": "sha256:25a132b194bd0f59e216e02299432ced"
+      },
+      "code": [
+        {
+          "path": "ebbline/kernels.py",
+          "symbol": "WINDOWS",
+          "quote": "WINDOWS = (\"bartlett\", \"parzen\", \"tukey\")",
+          "hash": "sha256:154e22c728148740c17b0a765e892885"
+        }
+      ],
+      "units": null,
+      "depends_on": [],
+      "contracts": [
+        "windows_census"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "queue",
+      "reasons": [
+        "Code anchor WINDOWS changed in ebbline/kernels.py"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/spectrum.tex",
+          "symbol": null,
+          "state": "fresh",
+          "line": 48,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/kernels.py",
+          "symbol": "WINDOWS",
+          "state": "queue",
+          "line": 9,
+          "before": "WINDOWS = (\"bartlett\", \"parzen\", \"tukey\")",
+          "after": "WINDOWS = (\"bartlett\", \"parzen\", \"tukey\", \"flat_top\")"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "windows_census",
+          "state": "pass",
+          "msg": ""
+        }
+      ],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.periodogram",
+      "chain": "spectrum",
+      "kind": "definition",
+      "title": "Periodogram",
+      "latex": "I(\\omega) = \\frac{1}{2\\pi T}\\Bigl|\\sum_{t=1}^{T} x_t\\, e^{-i\\omega t}\\Bigr|^2",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/spectrum.tex",
+        "symbol": null,
+        "quote": "The periodogram is the squared modulus of the transform, scaled by 2 pi T.",
+        "hash": "sha256:8dab8bcc4d336bd6038ac583e2213a3c"
+      },
+      "code": [
+        {
+          "path": "ebbline/spectrum.py",
+          "symbol": "periodogram",
+          "quote": "return abs(rfft(x)) ** 2 / (2 * pi * n)",
+          "hash": "sha256:37747476a59402634f0be94ac7b40eba"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "sp.sign"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/spectrum.tex",
+          "symbol": null,
+          "state": "fresh",
+          "line": 31,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/spectrum.py",
+          "symbol": "periodogram",
+          "state": "fresh",
+          "line": 19,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.density",
+      "chain": "spectrum",
+      "kind": "equation",
+      "title": "Lag-window density estimate",
+      "latex": "\\hat f(\\omega) = \\frac{1}{2\\pi}\\sum_{|k|<M} \\lambda\\!\\left(\\frac{k}{M}\\right)\\hat\\gamma_k\\, e^{-i\\omega k}",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/spectrum.tex",
+        "symbol": null,
+        "quote": "The estimate truncates at lag M = T / 4.",
+        "hash": "sha256:34b0f3bd09787563fc0f8ded91591606"
+      },
+      "code": [
+        {
+          "path": "ebbline/spectrum.py",
+          "symbol": "density",
+          "quote": "m = n // 4",
+          "hash": "sha256:c204f32b8deb88f5668065082b5ad857"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "sp.periodogram",
+        "sp.windows",
+        "dm.bartlett"
+      ],
+      "contracts": [
+        "density_reference"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "queue",
+      "reasons": [
+        "Contract density_reference failed",
+        "The documentation moved with the code"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/spectrum.tex",
+          "symbol": null,
+          "state": "queue",
+          "line": 57,
+          "before": "The estimate truncates at lag M = T / 4.",
+          "after": "The estimate truncates at lag M = T / 5, which trades variance for resolution."
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/spectrum.py",
+          "symbol": "density",
+          "state": "queue",
+          "line": 44,
+          "before": "m = n // 4",
+          "after": "m = n // 5"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "density_reference",
+          "state": "fail",
+          "msg": "Peak height moved by 2.1 per cent on the two-tone series"
+        }
+      ],
+      "upstreamChanged": [
+        "sp.windows"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "sp.taper",
+      "chain": "spectrum",
+      "kind": "lemma",
+      "title": "Cosine taper bias bound",
+      "latex": "\\bigl|\\mathbb{E}[\\hat f(\\omega)] - f(\\omega)\\bigr| \\le C\\,\\frac{\\rho}{T}",
+      "status": "argued",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "docs/spectrum.tex",
+        "symbol": null,
+        "quote": "Tapering a fraction rho of each end bounds the leakage bias by a term of order rho over T.",
+        "hash": "sha256:c4fbd983c6f8e1d28cfba31f52f8a167"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "sp.periodogram"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "queue",
+      "reasons": [
+        "Document quote not found in docs/spectrum.tex"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "docs/spectrum.tex",
+          "symbol": null,
+          "state": "lost",
+          "line": null,
+          "before": "Tapering a fraction rho of each end bounds the leakage bias by a term of order rho over T.",
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.code.density",
+      "chain": "spectrum",
+      "kind": "code",
+      "title": "density",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "ebbline/spectrum.py",
+        "symbol": "density",
+        "quote": "Lag-window estimate of the spectral density.",
+        "hash": "sha256:3cc9361211d5921c0bcbbd128a6317ee"
+      },
+      "code": [
+        {
+          "path": "ebbline/spectrum.py",
+          "symbol": "density",
+          "quote": "m = n // 4",
+          "hash": "sha256:c204f32b8deb88f5668065082b5ad857"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "sp.density"
+      ],
+      "contracts": [
+        "density_reference"
+      ],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "queue",
+      "reasons": [
+        "Contract density_reference failed",
+        "The documentation moved with the code"
+      ],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "ebbline/spectrum.py",
+          "symbol": "density",
+          "state": "fresh",
+          "line": 36,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/spectrum.py",
+          "symbol": "density",
+          "state": "queue",
+          "line": 44,
+          "before": "m = n // 4",
+          "after": "m = n // 5"
+        }
+      ],
+      "contractResults": [
+        {
+          "id": "density_reference",
+          "state": "fail",
+          "msg": "Peak height moved by 2.1 per cent on the two-tone series"
+        }
+      ],
+      "upstreamChanged": [
+        "sp.density",
+        "sp.windows"
+      ],
+      "verdict": null
+    },
+    {
+      "id": "sp.code.periodogram",
+      "chain": "spectrum",
+      "kind": "code",
+      "title": "periodogram",
+      "status": "implemented",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "ebbline/spectrum.py",
+        "symbol": "periodogram",
+        "quote": "Raw periodogram on the positive frequencies.",
+        "hash": "sha256:730f53f2b838224636a9688532d63bd1"
+      },
+      "code": [
+        {
+          "path": "ebbline/spectrum.py",
+          "symbol": "periodogram",
+          "quote": "return abs(rfft(x)) ** 2 / (2 * pi * n)",
+          "hash": "sha256:37747476a59402634f0be94ac7b40eba"
+        }
+      ],
+      "units": null,
+      "depends_on": [
+        "sp.periodogram"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "ebbline/spectrum.py",
+          "symbol": "periodogram",
+          "state": "fresh",
+          "line": 14,
+          "before": null,
+          "after": null
+        },
+        {
+          "kind": "code",
+          "path": "ebbline/spectrum.py",
+          "symbol": "periodogram",
+          "state": "fresh",
+          "line": 19,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.test.parseval",
+      "chain": "spectrum",
+      "kind": "test",
+      "title": "Parseval energy balance",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "tests/test_spectrum.py",
+        "symbol": "test_parseval",
+        "quote": "Total periodogram power equals the sample variance.",
+        "hash": "sha256:6a551279f54c53da64f0b73098c9a51d"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "sp.code.periodogram"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "tests/test_spectrum.py",
+          "symbol": "test_parseval",
+          "state": "fresh",
+          "line": 22,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [],
+      "verdict": null
+    },
+    {
+      "id": "sp.test.two_tone",
+      "chain": "spectrum",
+      "kind": "test",
+      "title": "Two-tone peak heights",
+      "status": "numerically_checked",
+      "proof": {
+        "state": "absent",
+        "ref": null
+      },
+      "doc": {
+        "path": "tests/test_spectrum.py",
+        "symbol": "test_two_tone",
+        "quote": "Both tones appear at the expected height.",
+        "hash": "sha256:1485d87ddd332606209cab733a87fed3"
+      },
+      "code": [],
+      "units": null,
+      "depends_on": [
+        "sp.code.density"
+      ],
+      "contracts": [],
+      "verified_by": [],
+      "pinned_to_code": false,
+      "class": "fresh",
+      "reasons": [],
+      "anchors": [
+        {
+          "kind": "doc",
+          "path": "tests/test_spectrum.py",
+          "symbol": "test_two_tone",
+          "state": "fresh",
+          "line": 47,
+          "before": null,
+          "after": null
+        }
+      ],
+      "contractResults": [],
+      "upstreamChanged": [
+        "sp.code.density",
+        "sp.density",
+        "sp.windows"
+      ],
+      "verdict": null
+    }
+  ],
+  "gaps": [
+    {
+      "path": "ebbline/longrun.py",
+      "symbol": "prewhiten",
+      "kind": "function"
+    },
+    {
+      "path": "ebbline/longrun.py",
+      "symbol": "long_run_variance(center)",
+      "kind": "parameter"
+    },
+    {
+      "path": "ebbline/kernels.py",
+      "symbol": "WINDOWS.flat_top",
+      "kind": "member"
+    },
+    {
+      "path": "ebbline/dm.py",
+      "symbol": "dm_statistic(alternative)",
+      "kind": "parameter"
+    }
+  ],
+  "uncharted": [
+    {
+      "path": "ebbline/io/loaders.py",
+      "lines": 812
+    },
+    {
+      "path": "ebbline/plotting.py",
+      "lines": 540
+    },
+    {
+      "path": "crates/ebb_core/src/simd.rs",
+      "lines": 402
+    },
+    {
+      "path": "ebbline/cli.py",
+      "lines": 318
+    },
+    {
+      "path": "scripts/backfill.py",
+      "lines": 96
+    }
+  ],
+  "activity": [
+    {
+      "path": "ebbline/longrun.py",
+      "changedAt": "2026-10-31T15:36:00.000Z",
+      "touches": [
+        "dm.code.newey_west",
+        "dm.variance",
+        "dm.code.statistic",
+        "dm.test.reference"
+      ]
+    },
+    {
+      "path": "ebbline/spectrum.py",
+      "changedAt": "2026-10-31T15:23:00.000Z",
+      "touches": [
+        "sp.density",
+        "sp.code.density",
+        "sp.test.two_tone"
+      ]
+    },
+    {
+      "path": "crates/ebb_core/src/yule.rs",
+      "changedAt": "2026-10-31T14:58:00.000Z",
+      "touches": [
+        "ar.innovation",
+        "ar.code.innovation",
+        "ar.test.positive"
+      ]
+    },
+    {
+      "path": "docs/forecast.md",
+      "changedAt": "2026-10-31T12:12:00.000Z",
+      "touches": [
+        "ar.predictor"
+      ]
+    }
+  ],
+  "decisions": [
+    {
+      "id": "dm.bartlett",
+      "by": "A. Lindqvist",
+      "at": "2026-10-27T09:14:00Z",
+      "reason": "Weights rewritten as a closed form; values unchanged on all reference lags."
+    },
+    {
+      "id": "sp.periodogram",
+      "by": "M. Okafor",
+      "at": "2026-10-22T16:02:00Z",
+      "reason": "Scaling moved to the definition, documentation updated in the same commit."
+    }
+  ]
+}

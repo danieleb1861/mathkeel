@@ -1,0 +1,12 @@
+mathkeel UI bundles the following third-party works into its single-file build.
+No code was copied from Understand-Anything.
+
+React and React DOM, MIT, Copyright (c) Meta Platforms, Inc. and affiliates.
+@xyflow/react, MIT, Copyright (c) 2019-2025 webkid GmbH.
+  The on-canvas attribution is hidden; this notice credits the project.
+KaTeX and its fonts, MIT, Copyright (c) 2013-2020 Khan Academy and other contributors.
+elkjs, EPL-2.0 OR GPL-3.0-or-later, Copyright (c) Kiel University and others.
+  Source: https://github.com/kieler/elkjs
+Source Serif 4, SIL Open Font License 1.1, Copyright Adobe (https://github.com/adobe-fonts/source-serif).
+Source Code Pro, SIL Open Font License 1.1, Copyright Adobe (https://github.com/adobe-fonts/source-code-pro).
+  Font files are packaged by Fontsource. The OFL text ships in each @fontsource-variable package.

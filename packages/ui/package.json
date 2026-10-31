@@ -1,0 +1,43 @@
+{
+  "name": "@mathkeel/ui",
+  "version": "0.1.0",
+  "private": true,
+  "license": "MIT",
+  "type": "module",
+  "description": "Local web UI of mathkeel: a restrained nautical chart of the mathematics a repository documents.",
+  "main": "dist/index.html",
+  "scripts": {
+    "dev": "vite",
+    "preview:states": "vite --open /preview.html",
+    "build": "vite build",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "vitest run",
+    "shots": "node scripts/shots.mjs",
+    "a11y": "node scripts/a11y.mjs",
+    "offline": "node scripts/offline.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/source-code-pro": "^5.3.1",
+    "@fontsource-variable/source-serif-4": "^5.3.1",
+    "@xyflow/react": "^12.12.0",
+    "elkjs": "^0.12.1",
+    "katex": "^0.19.1",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.14.0",
+    "@testing-library/react": "^16.3.3",
+    "@types/katex": "^0.16.8",
+    "@types/node": "^20.19.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "jsdom": "^26.1.0",
+    "playwright": "^1.64.1",
+    "typescript": "^5.9.0",
+    "vite": "^7.1.0",
+    "vite-plugin-singlefile": "^2.3.4",
+    "vitest": "^3.2.0"
+  }
+}

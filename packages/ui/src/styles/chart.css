@@ -1,0 +1,1083 @@
+.chain {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  margin: 10px var(--gutter) 0;
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--ink);
+  outline-offset: 6px;
+  outline-color: var(--line);
+  background: var(--paper);
+}
+
+.chart:focus-visible {
+  outline: 2px solid var(--focus);
+  outline-offset: 6px;
+}
+
+.chart__laying {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.chart-flow,
+.chart-flow .react-flow {
+  position: absolute;
+  inset: 0;
+  background: none;
+}
+
+/* React Flow is the pan and zoom engine; everything visible is drawn here. */
+.chart-flow .react-flow__nodes {
+  position: absolute;
+  z-index: 2;
+}
+
+.chart-flow .react-flow__viewport-portal {
+  z-index: 1;
+  pointer-events: none;
+}
+
+.chart-flow .react-flow__node {
+  cursor: pointer;
+}
+
+.chart-flow .react-flow__panel {
+  margin: 0;
+}
+
+.chart-layers {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.chart-svg {
+  position: absolute;
+  left: 0;
+  top: 0;
+  overflow: visible;
+}
+
+/* Marks */
+.mark {
+  position: relative;
+  width: 224px;
+  height: 42px;
+  color: var(--ink);
+  pointer-events: auto;
+  transition: opacity 160ms ease-out;
+}
+
+/* Dimming quiets the ink work; the lettering stays legible at AA. */
+.mark[data-dim] .mark__title,
+.mark[data-dim] .mark__sub,
+.mark[data-dim] .mark__state,
+.mark[data-dim] .mark__sounding {
+  color: var(--ink-3);
+}
+
+.mark[data-dim] .mark__rule,
+.mark[data-dim] .mark__glyph,
+.mark[data-dim] .glyph--upstream,
+.mark[data-dim] .glyph--anchor {
+  opacity: 0.4;
+}
+
+.mark__title {
+  position: absolute;
+  left: 26px;
+  right: 2px;
+  top: 2px;
+  font-size: 14px;
+  line-height: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-shadow:
+    0 0 2px var(--paper),
+    0 0 2px var(--paper),
+    0 0 3px var(--paper);
+}
+
+.mark__rule {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 21px;
+  border-top: 1px solid var(--line);
+}
+
+.mark[data-cls="queue"] .mark__rule {
+  border-top: 1.5px dashed var(--queue);
+}
+
+.mark[data-cls="review"] .mark__rule {
+  border-top: 1.5px solid var(--review);
+}
+
+.mark[data-cls="alert"] .mark__rule {
+  border-top: 3px double var(--alert);
+  top: 20px;
+}
+
+.mark__glyph {
+  position: absolute;
+  left: 0;
+  top: 10px;
+}
+
+.mark__sub {
+  position: absolute;
+  left: 26px;
+  right: 40px;
+  top: 24px;
+  font-size: 12px;
+  line-height: 15px;
+  font-style: italic;
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mark[data-cls="queue"] .mark__state {
+  color: var(--queue);
+}
+.mark[data-cls="review"] .mark__state {
+  color: var(--review);
+}
+.mark[data-cls="alert"] .mark__state {
+  color: var(--alert);
+}
+
+.mark__flags {
+  position: absolute;
+  right: 0;
+  top: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 15px;
+}
+
+.mark__sounding {
+  font-size: 13.5px;
+  line-height: 15px;
+  font-style: italic;
+  font-feature-settings: "lnum", "tnum";
+  color: var(--ink);
+}
+
+.mark[data-selected] .mark__rule {
+  border-top-width: 2px;
+  border-top-color: var(--focus);
+  border-top-style: solid;
+  top: 20px;
+}
+
+.mark[data-selected]::before {
+  content: "";
+  position: absolute;
+  inset: -3px -5px;
+  border: 2px solid var(--focus);
+  pointer-events: none;
+}
+
+.chart-flow[data-far] .mark__title,
+.chart-flow[data-far] .mark__sub,
+.chart-flow[data-far] .mark__flags,
+.chart-flow[data-far] .mark__formula {
+  visibility: hidden;
+}
+
+/* A formula sits under the lettering; the rule, and so every edge, stays put. */
+.mark[data-formula] {
+  height: 86px;
+}
+
+.mark__formula {
+  position: absolute;
+  left: 26px;
+  right: 2px;
+  top: 44px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  font-size: 13px;
+  color: var(--ink);
+}
+
+.mark__formula > * {
+  flex: none;
+  transform-origin: left center;
+  white-space: nowrap;
+}
+
+/* A formula too long for its mark says so; the Readout gives it in full. */
+.mark__formula[data-cut] {
+  -webkit-mask-image: linear-gradient(to right, #000 86%, transparent);
+  mask-image: linear-gradient(to right, #000 86%, transparent);
+}
+
+.mark__formula .tex-source__note {
+  display: none;
+}
+
+.mark[data-dim] .mark__formula {
+  opacity: 0.4;
+}
+
+/* Edges */
+.edge {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  transition: opacity 160ms ease-out;
+}
+
+.edge[data-kind="arc"] {
+  stroke-opacity: 0.85;
+}
+
+.edge[data-kind="cross"] {
+  stroke-dasharray: 2 4;
+}
+
+.edge[data-tone] {
+  stroke-width: 1.3;
+  stroke-dasharray: 6 3;
+}
+
+.edge[data-tone="alert"] {
+  stroke: var(--alert);
+}
+.edge[data-tone="review"] {
+  stroke: var(--review);
+}
+.edge[data-tone="queue"] {
+  stroke: var(--queue);
+}
+
+.edge[data-on] {
+  stroke-width: 1.8;
+}
+
+.edge[data-dim] {
+  opacity: 0.25;
+}
+
+/* The wake */
+.wake {
+  transition: opacity 2.4s linear;
+}
+
+.wake__band {
+  fill: none;
+  stroke: var(--wake-band);
+  stroke-width: 15;
+  stroke-opacity: 0.17;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wake__line {
+  fill: none;
+  stroke: var(--wake);
+  stroke-width: 1.2;
+  stroke-dasharray: 2 5;
+  stroke-linecap: round;
+}
+
+.wake__tick {
+  fill: var(--wake);
+}
+
+.wake[data-new] .wake__band {
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: wake-draw 1.4s ease-out forwards;
+}
+
+@keyframes wake-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Fog */
+.fog__shore {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 1;
+  stroke-dasharray: 1 4;
+  stroke-linecap: round;
+}
+
+.fog__shore--outer {
+  stroke-opacity: 0.55;
+}
+
+.fog__divide {
+  stroke: var(--line);
+  stroke-opacity: 0.5;
+  stroke-width: 1;
+  stroke-dasharray: 1 5;
+}
+
+.fog-labels {
+  position: absolute;
+}
+
+.fog-label {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  overflow: hidden;
+}
+
+.fog-label__path,
+.fog-label__lines {
+  background: var(--paper);
+  padding: 0 4px;
+  box-decoration-break: clone;
+}
+
+.fog-label__path {
+  font-family: var(--mono);
+  font-size: 12px;
+  line-height: 16px;
+  color: var(--ink-2);
+}
+
+.fog-label__lines {
+  font-size: 12px;
+  line-height: 16px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+/* Bands: chains are lettered like sea areas */
+.bands {
+  position: absolute;
+  left: 0;
+  top: 0;
+}
+
+.band {
+  position: absolute;
+  left: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  height: 34px;
+  padding-top: 4px;
+}
+
+.band__limit {
+  position: absolute;
+  left: -30px;
+  right: 0;
+  top: -12px;
+  border-top: 1px dashed var(--rule);
+}
+
+.band__title {
+  font-size: 20px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.1em;
+  color: var(--sea-name);
+  white-space: nowrap;
+  max-width: 640px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.band__meta {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.chart-flow[data-far] .band__title {
+  font-size: 44px;
+}
+
+.chart-flow[data-far] .band {
+  height: 60px;
+  top: auto;
+}
+
+.chart-flow[data-far] .band__meta {
+  visibility: hidden;
+}
+
+/* The neatline: a graduated border that moves with the chart */
+.neatline {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.neatline__defs {
+  position: absolute;
+}
+
+.neatline__edge {
+  position: absolute;
+}
+
+.neatline__edge--top,
+.neatline__edge--bottom {
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 6px;
+}
+
+.neatline__edge--top {
+  top: 0;
+}
+
+.neatline__edge--bottom {
+  bottom: 0;
+}
+
+.neatline__edge--left,
+.neatline__edge--right {
+  top: 0;
+  bottom: 0;
+  height: 100%;
+  width: 6px;
+}
+
+.neatline__edge--left {
+  left: 0;
+}
+
+.neatline__edge--right {
+  right: 0;
+}
+
+.neatline__tick {
+  fill: var(--ink);
+}
+
+.meridians {
+  position: absolute;
+  left: 6px;
+  right: 6px;
+  top: 6px;
+  height: 22px;
+  overflow: hidden;
+  background: var(--paper);
+  border-bottom: 1px solid var(--rule);
+}
+
+.meridian {
+  position: absolute;
+  left: -6px;
+  top: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 21px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variation-settings: "opsz" 8;
+  color: var(--ink-2);
+  white-space: nowrap;
+  transition: none;
+}
+
+.meridian__letter {
+  display: inline-grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--line);
+  font-size: 10px;
+  letter-spacing: 0;
+}
+
+.meridian--fog {
+  font-style: italic;
+  font-weight: 500;
+}
+
+/* Zoom */
+.zoom {
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  z-index: 6;
+  display: flex;
+  align-items: stretch;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  font-size: 13.5px;
+}
+
+.zoom button {
+  min-width: 30px;
+  height: 26px;
+  padding: 0 8px;
+  border-left: 1px solid var(--rule);
+}
+
+.zoom button:hover {
+  background: var(--paper-3);
+}
+
+.zoom__scale {
+  align-self: center;
+  padding: 0 10px;
+  font-style: italic;
+  font-feature-settings: "lnum", "tnum";
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+/* Inset */
+.inset.react-flow__minimap {
+  position: absolute;
+  right: 16px;
+  bottom: 50px;
+  z-index: 6;
+  margin: 0;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+}
+
+.inset .react-flow__minimap-mask {
+  fill: var(--paper-3);
+  fill-opacity: 0.6;
+}
+
+.inset__mark {
+  fill: var(--line);
+}
+.inset__mark--alert {
+  fill: var(--alert);
+}
+.inset__mark--review {
+  fill: var(--review);
+}
+.inset__mark--queue {
+  fill: var(--queue);
+}
+
+/* The chart's margin: the legend at rest, a reading once a mark is chosen */
+.margin {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-height: 54px;
+  margin-top: 8px;
+  padding: 4px var(--gutter);
+  border-top: 1px solid var(--rule);
+}
+
+.margin__mode {
+  flex: none;
+  display: flex;
+  margin-left: auto;
+  border: 1px solid var(--line);
+  font-size: 12.5px;
+}
+
+.margin__mode + .margin__mode {
+  margin-left: 8px;
+}
+
+.margin__mode button {
+  padding: 1px 9px;
+  color: var(--ink-2);
+}
+
+.margin__mode button[aria-pressed="true"] {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.readout {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 24px minmax(160px, 1fr) minmax(0, 1.3fr) auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.readout__text {
+  min-width: 0;
+}
+
+.readout__title {
+  font-size: 16px;
+  line-height: 1.25;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.readout__line {
+  font-size: 12.5px;
+  color: var(--ink-2);
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.readout__tex {
+  min-width: 0;
+  max-height: 48px;
+  overflow: hidden;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+
+.readout__open {
+  padding: 4px 14px;
+  border: 1px solid var(--ink);
+  font-size: 13.5px;
+  text-decoration: none;
+}
+
+.readout__open:hover {
+  background: var(--paper-3);
+}
+
+.legend {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.margin__fold {
+  display: none;
+  padding: 1px 0;
+  font-size: 12.5px;
+  color: var(--ink-2);
+  text-decoration: underline;
+  text-decoration-color: var(--line);
+  text-underline-offset: 3px;
+}
+
+.legend__title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variation-settings: "opsz" 8;
+  color: var(--ink-2);
+}
+
+.legend__items {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 2px 10px;
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+
+.legend__sounding {
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink);
+}
+
+/* Passage: the chain as a list */
+.passage {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 var(--gutter) 28px;
+}
+
+.formulas__note {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 12px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.formulas__list {
+  margin-top: 8px;
+  padding: 0;
+  list-style: none;
+}
+
+.formula {
+  padding: 10px 0 12px;
+  border-top: 1px solid var(--rule);
+}
+
+.formula__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.formula__head .glyph,
+.formula__head svg {
+  align-self: center;
+}
+
+.formula__head[data-selected] .formula__title {
+  text-decoration: underline;
+}
+
+.formula__title {
+  font-size: 16px;
+}
+
+.formula__sub {
+  font-size: 13px;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.formula[data-cls="queue"] .formula__sub {
+  color: var(--queue);
+}
+
+.formula[data-cls="review"] .formula__sub {
+  color: var(--review);
+}
+
+.formula[data-cls="alert"] .formula__sub {
+  color: var(--alert);
+}
+
+.formula__line {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 6px;
+}
+
+.formula__tex {
+  min-width: 0;
+  overflow-x: auto;
+  font-size: 18px;
+}
+
+.formula__none {
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.formula__number {
+  font-variant-numeric: tabular-nums;
+  color: var(--ink-2);
+}
+
+.formula__source {
+  margin-top: 4px;
+  overflow-wrap: anywhere;
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.passage__note {
+  padding: 10px 0;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.passage__chain {
+  max-width: 720px;
+  margin: 0 auto;
+  padding-top: 18px;
+}
+
+.passage__title {
+  font-size: 21px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  line-height: 1.25;
+  color: var(--sea-name);
+}
+
+.passage__rank-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 2px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  font-variation-settings: "opsz" 8;
+  color: var(--ink-2);
+}
+
+.passage__legs {
+  position: relative;
+}
+
+.passage__legs::before {
+  content: "";
+  position: absolute;
+  left: 11px;
+  top: 8px;
+  bottom: 8px;
+  border-left: 1px solid var(--line);
+}
+
+.leg__link {
+  position: relative;
+  display: grid;
+  grid-template-columns: 22px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 52px;
+  padding: 6px 0;
+  text-decoration: none;
+}
+
+.leg__link[data-selected] {
+  background: var(--paper-2);
+}
+
+.leg__title {
+  display: block;
+  font-size: 15.5px;
+  line-height: 1.25;
+}
+
+.leg__sub {
+  display: block;
+  font-size: 12.5px;
+  line-height: 1.3;
+  font-style: italic;
+  color: var(--ink-2);
+}
+
+.leg[data-cls="queue"] .leg__state {
+  color: var(--queue);
+}
+.leg[data-cls="review"] .leg__state {
+  color: var(--review);
+}
+.leg[data-cls="alert"] .leg__state {
+  color: var(--alert);
+}
+
+.leg__flags {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.leg__sounding {
+  font-size: 15px;
+  font-style: italic;
+  font-feature-settings: "lnum", "tnum";
+}
+
+.passage__fog {
+  position: relative;
+  max-width: 720px;
+  margin: 26px auto 0;
+  padding: 12px 14px 14px;
+  border-top: 1px dotted var(--line);
+  overflow: hidden;
+}
+
+.passage__stipple {
+  position: absolute;
+  inset: 0;
+}
+
+.passage__fog-title,
+.passage__fog-list {
+  position: relative;
+}
+
+.passage__fog-title {
+  display: inline-block;
+  padding: 0 6px;
+  background: var(--paper);
+  font-size: 19px;
+  font-weight: 400;
+  font-style: italic;
+  letter-spacing: 0.08em;
+  color: var(--ink);
+}
+
+.passage__fog-share {
+  font-feature-settings: "lnum", "tnum";
+}
+
+.passage__fog-list {
+  margin-top: 10px;
+  display: grid;
+  gap: 4px;
+}
+
+.passage__fog-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 1px 6px;
+  background: var(--paper);
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--ink-2);
+}
+
+.passage__fog-lines {
+  flex: none;
+  font-family: var(--serif);
+  font-style: italic;
+}
+
+/* Blank chart */
+.blank {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  margin: 10px var(--gutter) var(--gutter);
+  border: 1px solid var(--ink);
+  outline: 1px solid var(--line);
+  outline-offset: 6px;
+  overflow: auto;
+}
+
+.blank__sheet {
+  width: min(560px, 100%);
+  padding: 24px;
+}
+
+.blank__word {
+  font-size: clamp(30px, 9vw, 54px);
+  line-height: 1.1;
+  font-style: italic;
+  letter-spacing: 0.26em;
+  color: var(--sea-name);
+  margin-bottom: 20px;
+  overflow-wrap: normal;
+}
+
+.blank__title {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.blank__body {
+  color: var(--ink-2);
+  margin-bottom: 18px;
+}
+
+.blank__steps {
+  border-top: 1px solid var(--ink);
+}
+
+.blank__steps li {
+  display: grid;
+  grid-template-columns: minmax(0, 200px) minmax(0, 1fr);
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 14px;
+  color: var(--ink-2);
+}
+
+.blank__steps code {
+  color: var(--ink);
+}
+
+@media (max-width: 1100px) {
+  .readout {
+    grid-template-columns: 24px minmax(0, 1fr) auto;
+  }
+
+  .readout__tex {
+    display: none;
+  }
+}
+
+@media (max-width: 759px) {
+  .chart {
+    margin: 8px 10px 0;
+  }
+
+  .margin {
+    flex-wrap: wrap;
+    padding: 8px var(--gutter);
+    gap: 6px 14px;
+  }
+
+  .legend__title {
+    display: none;
+  }
+
+  .margin__fold {
+    display: inline-block;
+  }
+
+  .margin:not([data-legend]) .legend {
+    display: none;
+  }
+
+  .legend {
+    order: 2;
+    flex: 1 1 100%;
+  }
+
+  .blank {
+    margin: 10px 14px 14px;
+  }
+
+  .blank__steps li {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+}
