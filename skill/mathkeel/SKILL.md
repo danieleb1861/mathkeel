@@ -38,6 +38,10 @@ Read `references/mapping.md`, then:
 4. Report gaps, uncharted share and any disagreement between documentation and
    code as candidates, without a verdict.
 
+To choose the next chain from a code graph, run `mathkeel suggest <graph file>`
+and offer the result to the person. A link in a graph is a place to look, never
+evidence: it adds no node and supports no status.
+
 ## Judge alerts
 
 Use a fresh agent or context that did not build the map or the change.

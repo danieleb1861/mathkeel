@@ -537,6 +537,81 @@ describe("toon", () => {
   });
 });
 
+describe("graph", () => {
+  it("exports structure only, with repository paths and valid links", async () => {
+    const root = await twoNodeRepo();
+    const result = runCli(root, "export", "--graph", "out/g.json");
+    expect(result.code).toBe(0);
+    expect(result.stdout).toBe("wrote g.json\n");
+    const text = readFileSync(path.join(root, "out", "g.json"), "utf8");
+    const graph = JSON.parse(text) as {
+      nodes: { id: string; file_type: string; source_file: string }[];
+      links: { source: string; target: string; relation: string; confidence: string }[];
+    };
+    const ids = new Set(graph.nodes.map((node) => node.id));
+    expect(graph.links.every((link) => ids.has(link.source) && ids.has(link.target))).toBe(true);
+    expect(graph.links).toContainEqual(
+      expect.objectContaining({ _src: "mathkeel:gain", _tgt: "mathkeel:rate", relation: "depends_on" }),
+    );
+    expect(graph.links).toContainEqual(
+      expect.objectContaining({ source: "mathkeel:rate", target: "src/m.py#rate", relation: "implemented_by" }),
+    );
+    expect(new Set(graph.links.map((link) => link.confidence))).toEqual(new Set(["EXTRACTED"]));
+    expect(text).not.toMatch(/"class"|"status"|"verdict"|"hash"|numerically/);
+    expect(text).not.toContain(root.replace(/\\/g, "/"));
+    expect(text).not.toContain(path.basename(root));
+  });
+
+  it("ranks unmapped files by links to mapped code, from either graph format, and changes nothing", async () => {
+    const root = await twoNodeRepo();
+    writeFiles(root, { "src/near.py": "def n():\n    return 1\n", "src/far.py": "def f():\n    return 2\n" });
+    commitAll(root);
+    const before = readFileSync(path.join(root, ".mathkeel", "map.toon"), "utf8");
+    writeFiles(root, {
+      "manifest.json": JSON.stringify({
+        relationships: [
+          { from: "src/near.py", to: "src/m.py", relation: "imports", status: "EXTRACTED" },
+          { from: "src/far.py", to: "src/near.py", relation: "imports", status: "EXTRACTED" },
+          { from: "outside/secret.py", to: "src/m.py", relation: "imports", status: "EXTRACTED" },
+        ],
+      }),
+      "graph.json": JSON.stringify({
+        nodes: [
+          { id: "a", source_file: "src\\near.py" },
+          { id: "b", source_file: "./src/m.py" },
+          { id: "c", source_file: "src/far.py" },
+        ],
+        links: [
+          { source: "c", target: "b", confidence: "INFERRED" },
+          { source: "a", target: "b", confidence: "EXTRACTED" },
+          { source: "c", target: "b", confidence: "AMBIGUOUS" },
+        ],
+      }),
+    });
+    type Row = { path: string; links: number; inferred: number; near: string[] };
+    const rows = (file: string): Row[] => JSON.parse(runCli(root, "suggest", file, "--json").stdout) as Row[];
+    expect(rows("manifest.json").map((row) => [row.path, row.links, row.near])).toEqual([["src/near.py", 1, ["src/m.py"]]]);
+    expect(rows("graph.json").map((row) => [row.path, row.links, row.inferred])).toEqual([
+      ["src/near.py", 1, 0],
+      ["src/far.py", 0, 1],
+    ]);
+    expect(runCli(root, "suggest", "graph.json").stdout).toContain("nothing was added to the map");
+    expect(readFileSync(path.join(root, ".mathkeel", "map.toon"), "utf8")).toBe(before);
+  });
+
+  it("refuses a file that holds no relations, without echoing its path", async () => {
+    const root = await twoNodeRepo();
+    writeFiles(root, { "plain.json": '{"a":1}' });
+    const bad = runCli(root, "suggest", "plain.json");
+    expect(bad.code).toBe(2);
+    expect(bad.stderr).toContain("plain.json has neither");
+    const missing = runCli(root, "suggest", "gone.json");
+    expect(missing.code).toBe(2);
+    expect(missing.stderr).toContain("gone.json could not be read");
+    expect(runCli(root, "suggest").code).toBe(2);
+  });
+});
+
 describe("export", () => {
   it("writes one offline HTML file", async () => {
     const root = await twoNodeRepo();

@@ -141,12 +141,27 @@ mathkeel judge pack|apply
 mathkeel accept <id> --reason
 mathkeel serve [--port]        local UI, 127.0.0.1 only
 mathkeel export <file.html>    single offline HTML snapshot
+mathkeel export --graph <file> the map as a node-link graph, structure only
+mathkeel suggest <graph file>  unmapped files linked to mapped code; adds nothing
 ```
 
 `status`, `check`, `impact` and `trace` take `--json` or `--toon` for structured
 output; `--toon` is the form for agents and `--json` the form for tools.
 
 Exit codes: 0 clean, 1 alerts present, 2 usage or map error.
+
+## Other graphs
+
+A wiki or a code graph answers where to look; mathkeel answers whether a documented
+result changed. Neither writes to the other. Three bridges exist, and all are read-only:
+
+- A wiki page may cite a node id. It never copies a state, which would go stale.
+- `export --graph` writes nodes and links in the node-link shape Graphify reads:
+  undirected, with the direction in `_src` and `_tgt`, and `merge-graphs` accepts
+  it. It holds structure only, with no class, status or verdict.
+- `suggest` reads a Graphify `graph.json` or a list of `relationships` and ranks
+  unmapped files by their links to mapped code. A suggestion adds no node, and a
+  link from a graph never raises an alert. Ambiguous links are ignored.
 
 ## Snapshot
 

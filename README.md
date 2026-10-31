@@ -74,6 +74,8 @@ mathkeel; the `mathkeel` command must still be on your `PATH`.
 | `judge pack`, `judge apply` | Prepare alerts for an agent, then apply its proposals | No |
 | `accept` | Record your decision and rebaseline | No |
 | `serve`, `export` | Local live chart or offline HTML | No |
+| `export --graph` | The map as a graph that Graphify can merge | No |
+| `suggest <graph>` | Unmapped files linked to mapped code; adds nothing | No |
 
 `status`, `check`, `impact` and `trace` take `--toon` or `--json` for structured
 output. `check` and `judge apply` exit 1 while alerts or reviews remain, so an

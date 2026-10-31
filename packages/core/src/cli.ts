@@ -7,9 +7,10 @@ import { runContracts } from "./contracts.js";
 import { acceptNode } from "./decisions.js";
 import { MapError, UsageError } from "./errors.js";
 import { findUiDir, renderExport } from "./export.js";
+import { mapGraph, readRelations, suggest } from "./graph.js";
 import { impact, trace } from "./impact.js";
 import { judgeApply, judgePack } from "./judge.js";
-import { freezeMap, initRepo, lintMap, loadMap, mapWarnings } from "./mapio.js";
+import { formatData, freezeMap, initRepo, lintMap, loadMap, mapWarnings } from "./mapio.js";
 import { findRepoRoot } from "./repo.js";
 import { startServer } from "./server.js";
 import { buildSnapshot } from "./snapshot.js";
@@ -35,6 +36,8 @@ const HELP = `mathkeel ${VERSION}: watches the mathematics a repository document
   mathkeel accept <id> --reason R   rebaseline a node; a person's decision
   mathkeel serve [--port N]         local UI, 127.0.0.1 only
   mathkeel export <file.html>       single offline HTML snapshot
+  mathkeel export --graph <file>    the map as a node-link graph, structure only
+  mathkeel suggest <graph file>     unmapped files linked to mapped code; adds nothing
 
 Exit codes: 0 clean, 1 alerts present or awaiting review, 2 usage or map error.
 `;
@@ -249,15 +252,36 @@ async function cmdServe(root: string, args: string[]): Promise<number> {
 }
 
 async function cmdExport(root: string, args: string[]): Promise<number> {
-  const { positionals } = flags(args, {});
+  const { values, positionals } = flags(args, { graph: { type: "boolean" } });
   const [file, ...rest] = positionals;
-  if (file === undefined) throw new UsageError("usage: mathkeel export <file.html>");
+  if (file === undefined) throw new UsageError("usage: mathkeel export [--graph] <file>");
   noPositionals(rest);
-  const snapshot = await buildSnapshot(root, { useLastCheck: true });
   const target = path.resolve(process.cwd(), file);
+  const content = values.graph
+    ? formatData(target, mapGraph(loadMap(root)))
+    : renderExport(await buildSnapshot(root, { useLastCheck: true }), findUiDir());
   mkdirSync(path.dirname(target), { recursive: true });
-  writeFileSync(target, renderExport(snapshot, findUiDir()));
-  print(`wrote ${plain(target.replace(/\\/g, "/"))}`);
+  writeFileSync(target, content);
+  print(`wrote ${plain(path.basename(target))}`);
+  return 0;
+}
+
+async function cmdSuggest(root: string, args: string[]): Promise<number> {
+  const { values, positionals } = flags(args, { json: { type: "boolean" }, toon: { type: "boolean" } });
+  const [file, ...rest] = positionals;
+  if (file === undefined) throw new UsageError("usage: mathkeel suggest <graph file>");
+  noPositionals(rest);
+  const relations = readRelations(path.resolve(process.cwd(), file));
+  const { uncharted } = await buildSnapshot(root);
+  const rows = suggest(loadMap(root), uncharted, relations);
+  if (printData(rows, values)) return 0;
+  if (rows.length === 0) print("no unmapped file links to mapped code in this graph");
+  for (const row of rows) {
+    const inferred = row.inferred > 0 ? ` + ${row.inferred} inferred` : "";
+    print(`${plain(row.path)}  ${row.links} links${inferred}, ${row.lines} lines`);
+    print(`    near ${row.near.map(plain).join(", ")}`);
+  }
+  print("Suggestions only: nothing was added to the map.");
   return 0;
 }
 
@@ -281,6 +305,7 @@ export async function main(argv: string[]): Promise<number> {
     accept: cmdAccept,
     serve: cmdServe,
     export: cmdExport,
+    suggest: cmdSuggest,
   };
   if (command === "init") {
     noPositionals(args);
