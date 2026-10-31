@@ -5,12 +5,15 @@
 mathkeel anchors each documented statement to its text and its code, runs
 independent checks on request, and keeps a chart of what still holds. When a
 documented result changes, an agent proposes whether it is an error, and you
-decide. It works beside a coding agent without entering its context.
+decide. It works beside a coding agent without entering its context, on Python
+and Rust repositories documented in Markdown, LaTeX or docstrings.
 
 ![The chain view of mathkeel](packages/ui/screenshots/chain-day-desktop.png)
 
-mathkeel says "this documented result changed". It never says "this is proved"
-or "this code is correct".
+*The chain view, drawn from a synthetic fixture.*
+
+mathkeel says "this documented result changed". Proof and correctness stay with
+you: it reports the state of each statement and leaves the verdict to a person.
 
 mathkeel is built to be driven by a coding agent such as Claude Code or Codex.
 The agent writes the map and the contracts under `.mathkeel/`, queries the chain
@@ -25,18 +28,21 @@ fewer tokens.
    formatting and local renames, and an anchor change alone never raises an alert.
 2. **An independent agent** proposes `error`, `legitimate` or `uncertain`, with
    its reason.
-3. **You decide** with `mathkeel accept`. No agent and no UI control does this.
+3. **You decide** with `mathkeel accept`. The skill forbids agents to run it, and
+   the UI only shows the command to copy. Every decision is logged in
+   `.mathkeel/decisions.jsonl` with the Git user, time and commit, so you can
+   audit who accepted what.
 
-Code that nobody has mapped stays visible as fog on the chart, because mathkeel
-protects only what is mapped.
+Code that nobody has mapped stays visible as fog on the chart, so you always see
+what mathkeel covers.
 
 ## Quickstart
 
-mathkeel is not on npm yet, so build it from source. You need Node 20 or later,
-and the demo also needs Python and Git.
+Build mathkeel from source. You need Node 20 or later and Git, and the demo also
+needs Python.
 
 ```bash
-git clone <this repository> mathkeel
+git clone https://github.com/danieleb1861/mathkeel.git
 cd mathkeel
 npm install
 npm run build
@@ -44,13 +50,13 @@ npm link --workspace packages/core
 node eval/run.mjs
 ```
 
-The last command runs seven demo cases. In your own repository, you normally ask
-your agent to map a chain and it runs the commands below. They are listed so you
-can see what it does, or run them yourself:
+The last command runs seven demo cases and ends with `all 7 passed`. In your own
+repository, you normally ask your agent to map a chain and it runs the commands
+below. They are listed so you can see what it does, or run them yourself:
 
 ```bash
 mathkeel init
-# Describe one chain in .mathkeel/map.toon. See skill/mathkeel/references/mapping.md
+# The agent describes one chain in .mathkeel/map.toon, as in skill/mathkeel/references/mapping.md
 mathkeel map lint
 mathkeel map freeze
 mathkeel status
@@ -78,27 +84,86 @@ mathkeel; the `mathkeel` command must still be on your `PATH`.
 | `suggest <graph>` | Unmapped files linked to mapped code; adds nothing | No |
 
 `status`, `check`, `impact` and `trace` take `--toon` or `--json` for structured
-output. `check` and `judge apply` exit 1 while alerts or reviews remain, so an
-agent cannot turn continuous integration green by itself.
+output. `check` and `judge apply` exit 1 while alerts or reviews remain, so a
+verdict alone cannot turn continuous integration green. Exit code 2 means a usage
+or map error. In a non-interactive shell, `check` needs `--yes` to run contracts.
 
 ## Evaluation
 
 The design went through blinded benchmarks on one Python forecasting repository.
 One agent built the map and a separate agent wrote labelled code changes. Results
-on the 137 changes unseen by the rule set, with thresholds fixed in advance:
+on the 137 changes unseen by the rule set:
 
-| Measure | Controls alone | With judge | Target |
-| --- | --- | --- | --- |
-| Alert precision | 0.84 | 0.98 | 0.90 |
-| Mathematical errors found | 71% | 71% | 70% |
-| Subtle errors found | 68% | 68% | 50% |
-| Neutral changes without an alert | 100% | 100% | 95% |
-| Legitimate changes without an alert | 67% | 100% | 80% |
+| Measure | Controls alone | With judge |
+| --- | --- | --- |
+| Alert precision | 0.84 | 0.98 |
+| Mathematical errors found | 71% | 71% |
+| Subtle errors found | 68% | 68% |
+| Neutral changes without an alert | 100% | 100% |
+| Legitimate changes without an alert | 67% | 100% |
 
-These results have clear limits. The changes were artificial, there was one
-repository and one judge run, and the judge targets were set after the controls
-failed their own gate. A wrong change documented with care was not tested.
-Errors found reached 43 of 44 in mapped modules and 4 of 22 in barely mapped ones.
+Errors found reached 43 of 44 in well-mapped modules and 4 of 22 in barely
+mapped ones: the map's coverage drives detection. Scope: artificial changes on
+one repository, one judge run, with the judge reading JSON packs (v0.1 writes
+TOON). The benchmark data are kept outside this repository; `eval/run.mjs`
+reproduces the demo cases.
+
+### A run on a real repository
+
+We then ran v0.1 on
+[BESS_sizing_tool](https://github.com/danieleb1861/BESS_sizing_tool), about 1,600
+lines of Python with no tests at the start, which accompanies a published paper. One
+agent wrote the specification from the paper and the README, then 44 nodes and 44
+contracts in four chains.
+
+| Measure | Result |
+| --- | --- |
+| Contracts run on the starting commit | 43 |
+| Contracts failing on it | 12 |
+| Written before the agent read the function bodies | 32 of 43 |
+| Failures that exposed a real crash | 1 |
+| Commits that changed mapped code during the run | 4 |
+
+The failing contracts pointed, among other findings, to a call that crashed the
+KPI step and to README data formats that the loader refused. Commits made during
+the run fixed six of the twelve. When a later commit rewrote the solver, `check`
+flagged the affected contracts at once, and `status` had already queued the
+changed symbols.
+
+Scope: one repository, with one agent writing both the map and the contracts.
+Expected values came from the documentation; 11 of the 43 contracts were added
+after reading the code, and four were corrected during the run. The run measures
+what mathkeel found, not recall, and leaves the verdict on each failure to a
+person.
+
+### Token cost
+
+`eval/tokens.mjs` measures what an agent must read to answer fixed questions with
+the same evidence in every arm. It counts text with cl100k_base and does not run an
+agent. `exact` is a search that already knows the right terms, so it is an
+unbeatable rival. `keyword` greps one word of the question, and `whole` reads each
+file that holds the evidence.
+
+| Measure | Demo | BESS_sizing_tool |
+| --- | --- | --- |
+| Mapped questions | 2 | 10 |
+| Saved against `exact` | -14% | 10% (median 0%) |
+| Saved against `keyword` | 47% | 56% |
+| Saved against `whole` | 41% | 72% |
+| Questions to repay the map, against `keyword` | 8 | 25 |
+| Questions to repay the map, against `whole` | 11 | 9 |
+| One-off cost of the map, in tokens | 1,927 | 27,767 |
+
+mathkeel pays off by replacing guessed searches and whole-file reads, mostly on
+impact questions, and stays close to even with a search that already knows the
+right terms. On unmapped questions the overhead is small: 26 tokens over two
+questions on BESS_sizing_tool. The one-off cost covers the map, the contracts and
+reading their anchors. The questions were chosen after building the map, so the
+figures are indicative.
+
+`node eval/tokens.mjs` reproduces the demo column. The questions behind the
+BESS_sizing_tool column are in `eval/tokens.bess.json`; that column also uses the
+repository's map.
 
 ## Privacy and security
 
@@ -109,10 +174,12 @@ requires a random token, and stops with its process.
 
 ## Status
 
-v0.1, tested on Windows with Node 24 and on Chromium. Python and Rust anchors;
-Rust parsing uses an older grammar, so recent syntax may be unsupported. macOS,
-Linux, Node 20, Firefox and Safari are not yet tested.
+v0.1, tested on Windows with Node 24 and on Chromium; the build, tests and demo
+pass. Rust parsing uses a pinned grammar version; very recent syntax may need a
+grammar update. macOS, Linux, Node 20,
+Firefox and Safari are the next platforms for the test matrix.
 
 ## License
 
-MIT
+[MIT](LICENSE). The UI bundles third-party works under their own licenses, listed
+in [`packages/ui/NOTICE`](packages/ui/NOTICE).

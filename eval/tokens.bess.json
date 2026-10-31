@@ -1,0 +1,204 @@
+[
+ {
+  "id": "soc",
+  "kind": "mapped",
+  "question": "Where is the SoC dynamics documented and implemented, and what depends on it?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: soc_dynamics", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "soc_dynamics"],
+   ["mathkeel", "impact", "_soc_update"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "SOC-DYNAMICS|def _soc_update|def bess_soc_step", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/dp.py", "src/bess_nsps/models.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Battery and state of charge (paper Sections 2.2, 3.3.3)"},
+   {"path": "src/bess_nsps/dp.py", "symbol": "_soc_update"},
+   {"path": "src/bess_nsps/models.py", "symbol": "bess_soc_step"}
+  ],
+  "keyword": "soc"
+ },
+ {
+  "id": "beta",
+  "kind": "mapped",
+  "question": "Which efficiency applies to which sign of the battery power?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: beta", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "beta"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "BETA-PIECEWISE|eta_d|eta_c", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/dp.py", "src/bess_nsps/models.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Battery and state of charge (paper Sections 2.2, 3.3.3)"},
+   {"path": "src/bess_nsps/dp.py", "symbol": "_soc_update"},
+   {"path": "src/bess_nsps/models.py", "symbol": "bess_soc_step"}
+  ],
+  "keyword": "eta"
+ },
+ {
+  "id": "fuel",
+  "kind": "mapped",
+  "question": "Where is the fuel objective documented and implemented, and in which units?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: fuel_objective", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "fuel_objective"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "FUEL-OBJECTIVE|fuel_kg =", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/dp.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Generator dispatch and fuel cost (paper Sections 3.3.1 to 3.3.3)"},
+   {"path": "src/bess_nsps/dp.py", "symbol": "run_dp"}
+  ],
+  "keyword": "fuel"
+ },
+ {
+  "id": "ramp",
+  "kind": "mapped",
+  "question": "Where are the generator ramp limits documented and enforced?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: generator_ramp", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "generator_ramp"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "GENERATOR-RAMP|ramp_up|ramp_dn|dp > up", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/dp.py", "src/bess_nsps/models.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Generator dispatch and fuel cost (paper Sections 3.3.1 to 3.3.3)"},
+   {"path": "src/bess_nsps/models.py", "symbol": "DGSpec"},
+   {"path": "src/bess_nsps/dp.py", "symbol": "run_dp"}
+  ],
+  "keyword": "ramp"
+ },
+ {
+  "id": "efc",
+  "kind": "mapped",
+  "question": "How are equivalent full cycles defined and computed?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: f4_efc", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "f4_efc"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "F4-EFC|EFC-CONSTANTS|efc =", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/kpi.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Performance functions and Pareto selection (paper Sections 3.2, 3.4, 5.1)"},
+   {"path": "src/bess_nsps/kpi.py", "symbol": "compute_kpis"}
+  ],
+  "keyword": "efc"
+ },
+ {
+  "id": "volume",
+  "kind": "mapped",
+  "question": "How is the battery volume computed, and on what does it depend?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: f7_volume", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "f7_volume"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "F7-VOLUME|def compute_bess_volume_m3|def backup_minutes", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/kpi.py", "src/bess_nsps/models.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Performance functions and Pareto selection (paper Sections 3.2, 3.4, 5.1)"},
+   {"path": "src/bess_nsps/kpi.py", "symbol": "compute_bess_volume_m3"},
+   {"path": "src/bess_nsps/models.py", "symbol": "BESSpec"}
+  ],
+  "keyword": "volume"
+ },
+ {
+  "id": "pareto",
+  "kind": "mapped",
+  "question": "Where is the Pareto condition documented and implemented?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: pareto_condition", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "pareto_condition"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "PARETO-CONDITION|def nondominated", "--", ".mathkeel/spec/paper_equations.md", "src/bess_nsps/main_opt.py"]
+  ],
+  "evidence": [
+   {"path": ".mathkeel/spec/paper_equations.md", "heading": "Performance functions and Pareto selection (paper Sections 3.2, 3.4, 5.1)"},
+   {"path": "src/bess_nsps/main_opt.py", "symbol": "nondominated"}
+  ],
+  "keyword": "pareto"
+ },
+ {
+  "id": "window",
+  "kind": "mapped",
+  "question": "How does the ramp method score a manoeuvre window?",
+  "mathkeel": [
+   ["git", "grep", "--no-index", "-n", "-i", "id: window_ramp", "--", ".mathkeel/map.toon"],
+   ["mathkeel", "trace", "window_ramp"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "Available methods|def _window_score_ramp|def find_manoeuvre_window", "--", "README.md", "src/bess_nsps/window.py"]
+  ],
+  "evidence": [
+   {"path": "README.md", "heading": "Manoeuvre/window selection"},
+   {"path": "src/bess_nsps/window.py", "symbol": "_window_score_ramp"},
+   {"path": "src/bess_nsps/window.py", "symbol": "find_manoeuvre_window"}
+  ],
+  "keyword": "window"
+ },
+ {
+  "id": "imp-bess",
+  "kind": "impact",
+  "question": "If BESSpec changes, which documented results are affected?",
+  "mathkeel": [
+   ["mathkeel", "impact", "BESSpec"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "BESSpec|backup_minutes|eta_c|eta_d|soc_min|soc_max", "--", "src/bess_nsps/dp.py", "src/bess_nsps/kpi.py", "src/bess_nsps/main_opt.py", "src/bess_nsps/models.py"]
+  ],
+  "evidence": [
+   {"path": "src/bess_nsps/models.py", "symbol": "BESSpec"}
+  ],
+  "keyword": "BESSpec"
+ },
+ {
+  "id": "imp-kpi",
+  "kind": "impact",
+  "question": "If compute_kpis changes, which documented results are affected?",
+  "mathkeel": [
+   ["mathkeel", "impact", "compute_kpis"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "-E", "compute_kpis|efc_per_year|dod_mean|c_rate_mean_per_h", "--", "src/bess_nsps"]
+  ],
+  "evidence": [
+   {"path": "src/bess_nsps/kpi.py", "symbol": "compute_kpis"}
+  ],
+  "keyword": "compute_kpis"
+ },
+ {
+  "id": "ctl-soc",
+  "kind": "unmapped",
+  "question": "How is the SoC figure drawn?",
+  "mathkeel": [
+   ["mathkeel", "impact", "plot_soc"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "def plot_soc", "--", "src/bess_nsps/plots.py"]
+  ],
+  "evidence": [
+   {"path": "src/bess_nsps/plots.py", "symbol": "plot_soc"}
+  ],
+  "keyword": "plot_soc"
+ },
+ {
+  "id": "ctl-heat",
+  "kind": "unmapped",
+  "question": "How is the fuel heatmap drawn?",
+  "mathkeel": [
+   ["mathkeel", "impact", "plot_pe_fuel_heatmap"]
+  ],
+  "search": [
+   ["git", "grep", "-n", "def plot_pe_fuel_heatmap", "--", "src/bess_nsps/plot_results.py"]
+  ],
+  "evidence": [
+   {"path": "src/bess_nsps/plot_results.py", "symbol": "plot_pe_fuel_heatmap"}
+  ],
+  "keyword": "heatmap"
+ }
+]

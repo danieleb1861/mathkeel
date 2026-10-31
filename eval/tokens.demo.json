@@ -1,0 +1,97 @@
+[
+ {
+  "id": "variance",
+  "kind": "mapped",
+  "question": "Where is the Newey-West variance documented and implemented, and what depends on it?",
+  "mathkeel": [
+   [
+    "git",
+    "grep",
+    "--no-index",
+    "-n",
+    "-i",
+    "id: newey",
+    "--",
+    ".mathkeel/map.toon"
+   ],
+   [
+    "mathkeel",
+    "trace",
+    "newey_west"
+   ],
+   [
+    "mathkeel",
+    "impact",
+    "newey_west_variance"
+   ]
+  ],
+  "search": [
+   [
+    "git",
+    "grep",
+    "-n",
+    "-E",
+    "Newey|newey_west_variance",
+    "--",
+    "README.md",
+    "stats.py"
+   ]
+  ],
+  "evidence": [
+   {
+    "path": "README.md",
+    "heading": "Variance of the mean"
+   },
+   {
+    "path": "stats.py",
+    "symbol": "newey_west_variance"
+   }
+  ],
+  "keyword": "variance"
+ },
+ {
+  "id": "interval",
+  "kind": "mapped",
+  "question": "Where is the interval half-width documented and implemented?",
+  "mathkeel": [
+   [
+    "git",
+    "grep",
+    "--no-index",
+    "-n",
+    "-i",
+    "id: interval",
+    "--",
+    ".mathkeel/map.toon"
+   ],
+   [
+    "mathkeel",
+    "trace",
+    "interval"
+   ]
+  ],
+  "search": [
+   [
+    "git",
+    "grep",
+    "-n",
+    "-E",
+    "half.width|mean_interval",
+    "--",
+    "README.md",
+    "stats.py"
+   ]
+  ],
+  "evidence": [
+   {
+    "path": "README.md",
+    "heading": "Interval"
+   },
+   {
+    "path": "stats.py",
+    "symbol": "mean_interval"
+   }
+  ],
+  "keyword": "interval"
+ }
+]
