@@ -1,5 +1,20 @@
 # mathkeel
 
+<div align="center">
+
+[![CLI](https://img.shields.io/badge/-CLI-000000?logo=gnu-bash&logoColor=white)](https://en.wikipedia.org/wiki/Command-line_interface)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/badge/Node.js-20%2B-5FA04E?logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react&logoColor=black)](https://react.dev/)
+[![targets](https://img.shields.io/badge/maps-Python%20%7C%20Rust-000000?logo=python&logoColor=white)](#how-it-works)
+
+[![status](https://img.shields.io/badge/status-v0.1-orange?logo=githubactions&logoColor=white)](https://semver.org/)
+[![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+[![agent skill](https://img.shields.io/badge/Agent%20Skill-Claude%20Code%20%7C%20Codex-D97757?logo=anthropic&logoColor=white)](skill/mathkeel)
+[![telemetry](https://img.shields.io/badge/telemetry-none-blue)](#privacy-and-security)
+
+</div>
+
 **Know when the mathematics your code documents has changed.**
 
 mathkeel anchors each documented statement to its text and its code, runs
