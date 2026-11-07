@@ -10,8 +10,6 @@
 
 [![status](https://img.shields.io/badge/status-v0.1-orange?logo=githubactions&logoColor=white)](https://semver.org/)
 [![license](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![agent skill](https://img.shields.io/badge/Agent%20Skill-Claude%20Code%20%7C%20Codex-D97757?logo=anthropic&logoColor=white)](skill/mathkeel)
-[![telemetry](https://img.shields.io/badge/telemetry-none-blue)](#privacy-and-security)
 
 </div>
 
