@@ -21,9 +21,9 @@ documented result changes, an agent proposes whether it is an error, and you
 decide. It works beside a coding agent without entering its context, on Python
 and Rust repositories documented in Markdown, LaTeX or docstrings.
 
-![The chain view of mathkeel](packages/ui/screenshots/chain-day-desktop.png)
+[![The chain view of mathkeel — click to zoom](packages/ui/screenshots/chain-day-desktop.png)](https://danieleb1861.github.io/mathkeel/)
 
-*The chain view, drawn from a synthetic fixture.*
+*The chain view, drawn from a synthetic fixture. [Open the interactive figure](https://danieleb1861.github.io/mathkeel/) to zoom and pan.*
 
 mathkeel says "this documented result changed". Proof and correctness stay with
 you: it reports the state of each statement and leaves the verdict to a person.
