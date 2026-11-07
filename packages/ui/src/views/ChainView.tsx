@@ -36,6 +36,10 @@ export type ViewKeys = (event: KeyboardEvent) => boolean;
 const FAR_ZOOM = 0.5;
 const READABLE_ZOOM = 0.52;
 const MINIMAP_FROM = 60;
+const MIN_ZOOM = 0.08;
+const MAX_ZOOM = 2;
+/** Ctrl + wheel, or a pinch: twice the library's own step, about 32% a notch at 100% display scaling. */
+const WHEEL_ZOOM_BOOST = 2;
 /** Below this a formula stops shrinking and fades out at the edge of its mark. */
 const FORMULA_MIN_SCALE = 0.62;
 
@@ -537,6 +541,25 @@ function Chart({
   }, [selected, bringIntoView]);
 
   useEffect(() => {
+    const frame = frameRef.current;
+    if (!frame) return undefined;
+    const onWheel = (event: WheelEvent): void => {
+      if (!event.ctrlKey) return; // a plain wheel keeps panning
+      event.preventDefault();
+      event.stopPropagation();
+      const unit = event.deltaMode === 1 ? 0.05 : event.deltaMode ? 1 : 0.002;
+      const pinch = /Mac/.test(navigator.platform) ? 10 : 1; // the same scale as the library's own wheel step
+      const { x, y, zoom: scale } = flow.getViewport();
+      const steps = -event.deltaY * unit * pinch * WHEEL_ZOOM_BOOST;
+      const next = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, scale * 2 ** steps));
+      const held = flow.screenToFlowPosition({ x: event.clientX, y: event.clientY });
+      void flow.setViewport({ x: x + held.x * (scale - next), y: y + held.y * (scale - next), zoom: next });
+    };
+    frame.addEventListener("wheel", onWheel, { capture: true, passive: false });
+    return () => frame.removeEventListener("wheel", onWheel, { capture: true });
+  }, [flow, frameRef]);
+
+  useEffect(() => {
     keysRef.current = (event) => {
       if (event.key === "+" || event.key === "=") {
         void flow.zoomIn({ duration });
@@ -581,8 +604,8 @@ function Chart({
         nodes={nodes}
         edges={[]}
         nodeTypes={NODE_TYPES}
-        minZoom={0.08}
-        maxZoom={2}
+        minZoom={MIN_ZOOM}
+        maxZoom={MAX_ZOOM}
         nodesDraggable={false}
         nodesConnectable={false}
         nodesFocusable={false}
