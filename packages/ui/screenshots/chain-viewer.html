@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>mathkeel chain view</title>
+  <style>
+    body { margin: 0; font: 16px system-ui, sans-serif; background: #f5f3ed; color: #222; }
+    header { padding: 1rem; }
+    h1 { margin: 0 0 .5rem; font-size: 1.25rem; }
+    p { margin: .5rem 0; }
+    button { padding: .4rem .8rem; margin-right: .3rem; cursor: pointer; }
+    #viewer { height: 75vh; overflow: auto; background: #fff; border-block: 1px solid #ccc; }
+    #viewer img { display: block; max-width: none; width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>mathkeel chain view</h1>
+    <p>Synthetic fixture. Use the buttons to zoom and scroll to move around the image.</p>
+    <button type="button" id="out" aria-label="Zoom out">−</button>
+    <button type="button" id="in" aria-label="Zoom in">+</button>
+    <button type="button" id="reset">Reset</button>
+    <span id="scale" aria-live="polite">100%</span>
+  </header>
+  <div id="viewer" tabindex="0" aria-label="Zoomable chain view; use scrollbars or arrow keys to move">
+    <img id="figure" src="chain-day-desktop.png" alt="mathkeel chain view showing documented statements and their connections">
+  </div>
+  <script>
+    const viewer = document.getElementById('viewer');
+    const figure = document.getElementById('figure');
+    const scaleLabel = document.getElementById('scale');
+    let scale = 1;
+    function setScale(next) {
+      const oldWidth = figure.clientWidth;
+      const centerX = (viewer.scrollLeft + viewer.clientWidth / 2) / oldWidth;
+      const centerY = (viewer.scrollTop + viewer.clientHeight / 2) / oldWidth;
+      scale = Math.max(1, Math.min(4, next));
+      figure.style.width = `${scale * 100}%`;
+      const newWidth = figure.clientWidth;
+      viewer.scrollLeft = centerX * newWidth - viewer.clientWidth / 2;
+      viewer.scrollTop = centerY * newWidth - viewer.clientHeight / 2;
+      scaleLabel.textContent = `${Math.round(scale * 100)}%`;
+    }
+    document.getElementById('in').addEventListener('click', () => setScale(scale * 1.25));
+    document.getElementById('out').addEventListener('click', () => setScale(scale / 1.25));
+    document.getElementById('reset').addEventListener('click', () => setScale(1));
+  </script>
+</body>
+</html>

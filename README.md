@@ -25,6 +25,8 @@ and Rust repositories documented in Markdown, LaTeX or docstrings.
 
 *The chain view, drawn from a synthetic fixture.*
 
+For an interactive, zoomable view, open [the figure viewer](packages/ui/screenshots/chain-viewer.html) in a browser after cloning the repository.
+
 mathkeel says "this documented result changed". Proof and correctness stay with
 you: it reports the state of each statement and leaves the verdict to a person.
 
